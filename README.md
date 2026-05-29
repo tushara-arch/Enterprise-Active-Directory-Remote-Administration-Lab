@@ -10,7 +10,7 @@ This project demonstrates the deployment and configuration of an Active Director
 
 ---
 
-## 🚀 Phase 1: Active Directory Domain Controller Setup
+##  Phase 1: Active Directory Domain Controller Setup
 
 **Actions Taken:**
 1. Assigned a static IP address to the Windows Server.
@@ -19,7 +19,7 @@ This project demonstrates the deployment and configuration of an Active Director
    
 ---
 
-## 🚀 Phase 2: Joining the Client Computer to the Domain
+##  Phase 2: Joining the Client Computer to the Domain
 
 **Actions Taken:**
 1. Configured the Windows client's primary DNS to point to the Domain Controller's IP address.
@@ -34,7 +34,7 @@ This project demonstrates the deployment and configuration of an Active Director
 
 ---
 
-## 🚀 Phase 3: Organizational Unit (OU) & Group Policy (GPO) Configuration
+##  Phase 3: Organizational Unit (OU) & Group Policy (GPO) Configuration
 
 **Actions Taken:**
 1. Opened **Active Directory Users and Computers (ADUC)**.
@@ -49,7 +49,7 @@ This project demonstrates the deployment and configuration of an Active Director
 
 ---
 
-## 🚀 Phase 4: Firewall Configuration for Remote MMC
+##  Phase 4: Firewall Configuration for Remote MMC
 
 **Actions Taken:**
 To use MMC to control the client remotely, specific firewall rules must be enabled. I configured these centrally via the GPO created in Phase 3 (`Computer Configuration` -> `Policies` -> `Windows Settings` -> `Security Settings` -> `Windows Defender Firewall`).
@@ -67,7 +67,7 @@ To use MMC to control the client remotely, specific firewall rules must be enabl
 
 ---
 
-## 🚀 Phase 5: Remote Management via MMC & Task Scheduler
+##  Phase 5: Remote Management via MMC & Task Scheduler
 
 **Actions Taken:**
 1. Logged into the Domain Controller (or an admin workstation) as a Domain Admin.
@@ -86,5 +86,5 @@ To use MMC to control the client remotely, specific firewall rules must be enabl
 
 ---
 
-## 🛡️ Security Operations Context
+##  Security Operations Context
 Understanding these Active Directory mechanics and Windows internals is crucial for Security Operations Center (SOC) monitoring and enterprise vulnerability management. Properly configuring and securing RPC, WMI, and remote management interfaces demonstrates how to balance the reduction of the network attack surface while maintaining legitimate administrative access.
