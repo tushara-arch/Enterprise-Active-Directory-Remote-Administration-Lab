@@ -2,7 +2,7 @@
 ##  Project Overview
 This project demonstrates the deployment and configuration of an Active Directory (AD) environment, focusing on centralizing client management. It covers joining a client machine to a domain, configuring Windows Defender Firewall for remote administration, structuring Organizational Units (OUs), applying Group Policy Objects (GPOs), and executing remote configurations via the Microsoft Management Console (MMC).
 
-## 🛠️ Environment Setup
+##  Environment Setup
 * **Domain Controller (DC):** Windows Server 2025 (Also the DNS server) 
 * **Client Machine:** Windows 11 Enterprise
 * **Domain Name:** `soclab.local`
@@ -13,7 +13,6 @@ This project demonstrates the deployment and configuration of an Active Director
 ##  Phase 1: Active Directory Domain Controller Setup
 
 **Actions Taken:**
-1. Assigned a static IP address to the Windows Server.
 2. Installed the **Active Directory Domain Services (AD DS)** and **DNS Server** roles via Server Manager.
 3. Promoted the server to a Domain Controller and configured the new forest root domain.
    
