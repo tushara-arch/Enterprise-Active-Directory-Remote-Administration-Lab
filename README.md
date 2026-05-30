@@ -13,8 +13,8 @@ This project demonstrates the deployment and configuration of an Active Director
 ##  Phase 1: Active Directory Domain Controller Setup
 
 **Actions Taken:**
-2. Installed the **Active Directory Domain Services (AD DS)** and **DNS Server** roles via Server Manager.
-3. Promoted the server to a Domain Controller and configured the new forest root domain.
+1. Installed the **Active Directory Domain Services (AD DS)** and **DNS Server** roles via Server Manager.
+2. Promoted the server to a Domain Controller and configured the new forest root domain.
    
 ---
 
