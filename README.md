@@ -21,10 +21,10 @@ This project demonstrates the deployment and configuration of an Active Director
 ##  Phase 2: Joining the Client Computer to the Domain
 
 **Actions Taken:**
-1. Configured the Windows client's primary DNS to point to the Domain Controller's IP address.
-2. Navigated to **Advanced System Settings** -> **Computer Name** -> **Change**.
-3. Entered the domain name and authenticated using the Domain Admin credentials.
-4. Restarted the client to apply changes.
+1. Configured the Windows 11 client's preferred DNS server to use the Domain Controller's IP address, enabling Active Directory name resolution.
+2. Successfully joined the client machine to the soclab.local domain using Domain Admin credentials.
+3. Restarted the system to complete the domain join process.
+4. Verified successful domain membership and communication with Active Directory services..
 
 > **⚠️ Common Errors & Troubleshooting**
 > * **Error:** *"An Active Directory Domain Controller (AD DC) for the domain could not be contacted."*
