@@ -8,6 +8,12 @@ This project demonstrates the deployment and configuration of an Active Director
 * **Domain Name:** `soclab.local`
 * **Network:** Both machines attached to the same virtual network (NAT).
 
+## 🗺️ Network Topology
+| Hostname | Role | IP Address | Operating System |
+| :--- | :--- | :--- | :--- |
+| `WIN-2QNL6415PHV` | Domain Controller / DNS | `192.168.18.129` (Static) | Windows Server 2025 |
+| `DESKTOP-IC11PIP` | Domain Endpoint | `192.168.18.130` (DHCP) | Windows 11 Enterprise |
+
 ---
 
 ##  Phase 1: Active Directory Domain Controller Setup
