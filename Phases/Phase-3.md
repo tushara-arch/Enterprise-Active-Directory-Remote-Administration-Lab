@@ -34,15 +34,10 @@ Policies must be explicitly linked to OUs to take effect.
 
 ## ⚠️ Troubleshooting: GPO Settings Not Reflecting on Client
 * **Cause 1 (Native Refresh Intervals):** Group Policy does not apply instantly. Windows endpoints natively refresh their policy from the Domain Controller every 90 minutes (with a randomized up to 30-minute offset).
-    * **Resolution:** Executed `gpupdate /force` via an elevated command prompt on the Windows 11 client to force an immediate pull of the latest AD directory configurations.
-* **Cause 2 (Incorrect Policy Context):** Applying computer-based configurations to an OU that only contains User objects, or vice-versa.
-    * **Resolution:** Verified in ADUC that the actual Computer object (`DESKTOP-IC11PIP`) was successfully seated inside the `IT department` OU where the policy was linked.
+    * **Resolution & Verification:** Executed `gpupdate /force` via an elevated command prompt on the Windows 11 client to force an immediate pull of the latest AD directory configurations. Once completed, ran `gpresult /r` to verify the application, confirming that `Remote Administration policy` successfully appeared under the "Applied Group Policy Objects" list for the computer context.
 
-##  Validation & Telemetry
-* **Verification:** Ran `gpresult /r` via the client's command prompt and confirmed that `Remote Administration policy` appeared under the "Applied Group Policy Objects" list for the computer context.
-* **SOC Visibility:** 
-    * **Domain Controller Logs:** Monitored the Security event logs for **Event ID 5136** (A directory service object was modified) to track the movement of the computer object between containers.
-    * **Client Logs:** Monitored the local `Microsoft-Windows-GroupPolicy/Operational` logs for **Event ID 1502** to confirm successful Group Policy processing and retrieval of the new GPO from the `SYSVOL` share.
+<img width="3840" height="2160" alt="Screenshot (38)" src="https://github.com/user-attachments/assets/6b289db0-e2ee-49b4-b6fa-495b219384e8" />
+
 
 ##  Enterprise Design Considerations
 * **Accidental Deletion Protection:** The checkbox selected during the OU creation modifies the AD object's access control list (ACL) to explicitly deny the "Delete" permission to everyone, including Domain Admins. This is a critical enterprise safeguard against catastrophic script errors or accidental clicks that could orphan thousands of endpoints.
