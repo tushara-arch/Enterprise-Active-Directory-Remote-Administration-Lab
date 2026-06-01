@@ -1,4 +1,4 @@
-<img width="3840" height="2160" alt="Screenshot (39)" src="https://github.com/user-attachments/assets/ff5a9e1a-49a5-4a27-bd40-df6823e22d7f" /><img width="3840" height="2160" alt="Screenshot (39)" src="https://github.com/user-attachments/assets/f053bcec-e502-46b2-ad67-2747c0ef095a" /># Phase 4: Security Hardening & Remote Administration Prerequisites
+# Phase 4: Security Hardening & Remote Administration Configuration
 
 ## Objective
 Prepare the enterprise endpoint for secure remote management by configuring necessary Windows internal services, user rights, and highly restricted firewall policies via GPO. This phase ensures the machine can accept remote commands without exposing a broad network attack surface.
