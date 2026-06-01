@@ -12,9 +12,10 @@ Before the firewall processes any rules, the Windows operating system must expli
 
 ### 2. Mandatory Background Services
 A remote RPC call fails instantly if the listening service is disabled. Verified the following services were set to **Automatic** and currently **Running** on the Windows 11 client:
-* **Task Scheduler (`Schedule`):** The core engine required to read or write remote tasks.
-* **Windows Event Log (`EventLog`):** Required for the MMC console UI to render the "History" tab without crashing.
-* **RPC Endpoint Mapper (`RpcEptMapper`):** Acts as the directory service that tells the MMC console which dynamic port the Task Scheduler is currently listening on.
+* **Task Scheduler:** The core engine required to read or write remote tasks.
+* **Windows Event Log:** Required for the MMC console UI to render the "History" tab without crashing.
+* **Remote Procedure Call (RPC):** The foundational transport mechanism for Windows inter-process communication. If this core service is not running, all network-based management protocols and MMC snap-ins will completely fail to establish a connection.
+* **RPC Endpoint Mapper:** Acts as the directory service that tells the MMC console which dynamic port the Task Scheduler is currently listening on.
 
 ### 3. User Rights Assignment (Local Security Policy)
 Even with perfect network configurations, Windows evaluates the local security policy to authorize the network logon.
@@ -25,11 +26,6 @@ Even with perfect network configurations, Windows evaluates the local security p
 ### 4. Centralized Firewall Hardening via GPO
 Instead of configuring the firewall locally, strict access controls were enforced centrally to prevent accidental exposure.
 * In the GPMC, navigated to: **Computer Configuration > Policies > Windows Settings > Security Settings > Windows Defender Firewall with Advanced Security**.
-* Created and enabled the following Inbound Rules, explicitly restricting the **Remote IP** scope to the Domain Controller's IP (`192.168.18.129`) to prevent lateral movement from peer workstations:
-    * **Predefined:** Remote Scheduled Tasks Management
-    * **Predefined:** Remote Event Log Management
-    * **Custom:** TCP Port 135 (RPC Endpoint Mapper)
-    * **Custom:** TCP Port 445 (SMB/Named Pipes - Required for Task Scheduler UI & File/Printer Sharing)
-
-## ✅ Validation & Telemetry
+* Created and enabled the following Inbound Rules, explicitly restricting the **Remote IP** scope to the Domain Controller's IP (`192.168.18.129`).
+    
 * **Verification:** Ran `gpupdate /force` on the client, then opened `wf.msc` (Windows Defender Firewall) locally on the client to verify the scoped rules successfully propagated from the Domain Controller and were actively enforced on the `Domain` profile.
