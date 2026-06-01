@@ -1,4 +1,4 @@
-# Phase 4: Security Hardening & Remote Administration Prerequisites
+<img width="3840" height="2160" alt="Screenshot (39)" src="https://github.com/user-attachments/assets/ff5a9e1a-49a5-4a27-bd40-df6823e22d7f" /><img width="3840" height="2160" alt="Screenshot (39)" src="https://github.com/user-attachments/assets/f053bcec-e502-46b2-ad67-2747c0ef095a" /># Phase 4: Security Hardening & Remote Administration Prerequisites
 
 ## Objective
 Prepare the enterprise endpoint for secure remote management by configuring necessary Windows internal services, user rights, and highly restricted firewall policies via GPO. This phase ensures the machine can accept remote commands without exposing a broad network attack surface.
@@ -22,6 +22,8 @@ Even with perfect network configurations, Windows evaluates the local security p
 * Accessed the GPO and navigated to: **Computer Configuration > Policies > Windows Settings > Security Settings > Local Policies > User Rights Assignment**.
 * **Access this computer from the network:** Ensured that `SOCLAB\Domain Admins` (and Authenticated Users) were explicitly granted this right.
 * **Deny access to this computer from the network:** Verified that no administrative groups were listed here, as a "Deny" rule silently overrides all firewall and permission settings, resulting in an immediate "Access Denied."
+* 
+<img width="3840" height="2160" alt="Screenshot (39)" src="https://github.com/user-attachments/assets/62ffde4e-4701-4ebc-a5bb-b925d766add4" />
 
 ### 4. Centralized Firewall Hardening via GPO
 Instead of configuring the firewall locally, strict access controls were enforced centrally to prevent accidental exposure.
@@ -29,3 +31,7 @@ Instead of configuring the firewall locally, strict access controls were enforce
 * Created and enabled the following Inbound Rules, explicitly restricting the **Remote IP** scope to the Domain Controller's IP (`192.168.18.129`).
     
 * **Verification:** Ran `gpupdate /force` on the client, then opened `wf.msc` (Windows Defender Firewall) locally on the client to verify the scoped rules successfully propagated from the Domain Controller and were actively enforced on the `Domain` profile.
+
+## 🏢 Enterprise Design Considerations
+* **Privileged Access Workstations (PAWs) & Tiered Admin Model:** The strict IP scoping applied to the firewall rules in this phase simulates a PAW architecture. In a mature enterprise, Domain Admins do not manage systems from generic user VLANs. Management traffic is strictly siloed to dedicated, highly secured management subnets, preventing lateral movement if a standard user endpoint is compromised.
+* **Immutable Security Baselines (GPO vs. Local):** Configuring User Rights and Firewall rules via Active Directory GPOs ensures the security baseline is immutable. Even if an attacker or rogue IT staff member manages to gain local admin rights on the Windows 11 endpoint and turns off the firewall, the GPO will aggressively overwrite their changes during the next 90-minute background refresh cycle.
