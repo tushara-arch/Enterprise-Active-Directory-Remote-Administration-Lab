@@ -16,18 +16,14 @@ Validate the enterprise security baseline established in Phase 4 by remotely con
 ### 2. Remote Task Execution (Auto-Healing Firewall Scenario)
 To demonstrate advanced SOC automation, a self-healing task was engineered remotely to prevent the endpoint's firewall from being maliciously disabled.
 
-* **The Object Picker Block (Unexpected Negative Test):** During initial task creation, an attempt to change the executing user account triggered a connection error: *"The program cannot open the required dialog box because it cannot determine whether the computer... is joined to a domain."*
-  <img width="3840" height="2160" alt="Screenshot (44)" src="https://github.com/user-attachments/assets/3a961d19-0d2a-4384-b561-dae36567f89e" />
-
+* **The Object Picker Block (Unexpected Negative Test):** During initial task creation, an attempt to change the executing user account triggered a connection error: *"The program cannot open the required dialog box because it cannot determine whether the computer... is joined to a domain."*<img width="3840" height="2160" alt="Screenshot (44)" src="https://github.com/user-attachments/assets/3a961d19-0d2a-4384-b561-dae36567f89e" />
+  
   * **Security Context:** This error inadvertently proved the efficacy of the Phase 4 baseline. The strict firewall actively dropped the Object Picker's Named Pipes/SMB request (TCP Port 445) required to verify domain accounts.
-* **Baseline Adjustment (Resolution):** To resolve this and allow remote account querying, a targeted **File and Printer Sharing (SMB-In)** rule was added to the central GPO.
-  ![Final Firewall Rules](image_e4b099.png)
+* **Baseline Adjustment (Resolution):** To resolve this and allow remote account querying, a targeted **File and Printer Sharing (SMB-In)** rule was added to the central GPO. <img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/3c41153e-6d30-4ea6-8fef-909177070dc9" />
 * **Privilege Escalation:** With SMB communication permitted to the Domain Controller, the task (`SOC-Firewall-Enforcer`) was successfully configured to run as `NT AUTHORITY\SYSTEM` with highest privileges so it executes silently in the background.
 * **Event-Driven Trigger:** Configured the task to trigger instantly upon the logging of **Event ID 2082** (generated when a Windows Defender Firewall profile setting has changed) within the `Microsoft-Windows-Windows Firewall With Advanced Security` log.
-* **Automated Remediation:** Set the action to launch `netsh` with the arguments `advfirewall set allprofiles state on`, forcing the Domain, Private, and Public profiles immediately back to an active state.
-* **Live Execution Demonstration:** The automated response was actively validated on the endpoint. As demonstrated below, when the Windows Defender Firewall is manually disabled, the scheduled task immediately detects the event and executes the remediation command, instantly forcing the firewall back to an active and secure state without manual SOC intervention.
-  ![Auto-Heal Demonstration](Demo.gif)
-
+* **Automated Remediation:** Set the action to launch `netsh` with the arguments `advfirewall set allprofiles state on`, forcing the Domain, Private, and Public profiles immediately back to an active state.  <img width="3845" height="2165" alt="Task Creation" src="https://github.com/user-attachments/assets/50ef692f-ab63-4058-8759-5a2996db0589" />
+* **Live Execution Demonstration:** The automated response was actively validated on the endpoint. As demonstrated below, when the Windows Defender Firewall is manually disabled, the scheduled task immediately detects the event and executes the remediation command, instantly forcing the firewall back to an active and secure state without manual SOC intervention.<img width="3845" height="2165" alt="Verification" src="https://github.com/user-attachments/assets/8b518b16-6440-41d8-8ba0-ea61f880d482" />
   
 
 
@@ -47,11 +43,10 @@ To further test the baseline, an attempt was made to load the **Services** snap-
 ## ⚠️ Troubleshooting: Remote Execution Exceptions
 * **Error: "The RPC Server is unavailable" (Error 0x800706BA / 1722)**
     * **Expected (Negative Test):** As demonstrated above, this error is *expected* when accessing unapproved snap-ins (like Services) because the firewall drops the dynamic port request.
-* **Error: "Access is Denied" (Error 0x80070005)**
+* **Error: "Access is Denied"**
     * **Cause:** Attempting to execute the MMC connection using an account lacking local administrative privileges or missing the "Access this computer from the network" right.(In my case I was using a Local Administrator account initially)
     * **Resolution:** Ensured the session was authenticated using the Domain Admin account.
+  <img width="3840" height="2160" alt="Screenshot (41)" src="https://github.com/user-attachments/assets/84695fc9-7a70-41ea-9357-dd79fa0ce06b" />
 
-## ✅ Validation & Telemetry
-* **Execution Verification:** Successfully observed the configuration change triggered by the remote scheduled task on the client endpoint in real-time.
-* **SOC Visibility:** * **Client Logs (Security):** Monitored the endpoint's Event Viewer for **Event ID 4624 (Type 3 Logon)**, verifying a network logon occurred specifically from the management IP (`192.168.18.129`). Monitored for **Event ID 4698**, confirming the scheduled task was successfully created.
-    * **Firewall Telemetry:** Reviewed the `pfirewall.log` (if enabled in Phase 4) to verify dropped TCP packets corresponding to the blocked **Services** connection attempt, proving the firewall's implicit deny is actively logging blocked lateral movement attempts.
+
+
