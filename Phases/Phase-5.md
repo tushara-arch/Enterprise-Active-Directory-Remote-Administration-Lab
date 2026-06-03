@@ -10,13 +10,25 @@ Validate the enterprise security baseline established in Phase 4 by remotely con
 * Executed `mmc.exe` to open a blank console.
 * Navigated to **File > Add/Remove Snap-in**, selected **Task Scheduler**, and explicitly targeted the remote endpoint: `DESKTOP-IC11PIP`.
 * Successfully connected and loaded the remote task library, confirming the GPO firewall rules successfully opened the required dynamic RPC ports for this specific service.
-<img width="3840" height="2160" alt="Screenshot (42)" src="https://github.com/user-attachments/assets/3650af26-d198-4774-b48c-0fbd978051d3" />
 <img width="3840" height="2160" alt="Screenshot (45)" src="https://github.com/user-attachments/assets/6ec70063-bb71-4b23-acac-54c051106e38" />
 
 
-### 2. Remote Task Execution
-* Within the remote Task Scheduler session, created a new scheduled task to execute a system configuration change.
-* Configured the task to run under the `NT AUTHORITY\SYSTEM` context to ensure maximum execution privileges without requiring an interactive user logon.
+### 2. Remote Task Execution (Auto-Healing Firewall Scenario)
+To demonstrate advanced SOC automation, a self-healing task was engineered remotely to prevent the endpoint's firewall from being maliciously disabled.
+
+* **The Object Picker Block (Unexpected Negative Test):** During initial task creation, an attempt to change the executing user account triggered a connection error: *"The program cannot open the required dialog box because it cannot determine whether the computer... is joined to a domain."*
+  <img width="3840" height="2160" alt="Screenshot (44)" src="https://github.com/user-attachments/assets/3a961d19-0d2a-4384-b561-dae36567f89e" />
+
+  * **Security Context:** This error inadvertently proved the efficacy of the Phase 4 baseline. The strict firewall actively dropped the Object Picker's Named Pipes/SMB request (TCP Port 445) required to verify domain accounts.
+* **Baseline Adjustment (Resolution):** To resolve this and allow remote account querying, a targeted **File and Printer Sharing (SMB-In)** rule was added to the central GPO.
+  ![Final Firewall Rules](image_e4b099.png)
+* **Privilege Escalation:** With SMB communication permitted to the Domain Controller, the task (`SOC-Firewall-Enforcer`) was successfully configured to run as `NT AUTHORITY\SYSTEM` with highest privileges so it executes silently in the background.
+* **Event-Driven Trigger:** Configured the task to trigger instantly upon the logging of **Event ID 2082** (generated when a Windows Defender Firewall profile setting has changed) within the `Microsoft-Windows-Windows Firewall With Advanced Security` log.
+* **Automated Remediation:** Set the action to launch `netsh` with the arguments `advfirewall set allprofiles state on`, forcing the Domain, Private, and Public profiles immediately back to an active state.
+* **Live Execution Demonstration:** The automated response was actively validated on the endpoint. As demonstrated below, when the Windows Defender Firewall is manually disabled, the scheduled task immediately detects the event and executes the remediation command, instantly forcing the firewall back to an active and secure state without manual SOC intervention.
+  ![Auto-Heal Demonstration](Demo.gif)
+
+  
 
 
 ### 3. Validating the "Implicit Deny" (Negative Testing)
