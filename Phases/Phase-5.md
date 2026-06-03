@@ -26,12 +26,11 @@ To demonstrate advanced SOC automation, a self-healing task was engineered remot
 * **Live Execution Demonstration:** The automated response was actively validated on the endpoint. As demonstrated below, when the Windows Defender Firewall is manually disabled, the scheduled task immediately detects the event and executes the remediation command, instantly forcing the firewall back to an active and secure state without manual SOC intervention.<img width="3845" height="2165" alt="Verification" src="https://github.com/user-attachments/assets/8b518b16-6440-41d8-8ba0-ea61f880d482" />
   
 
-
 ### 3. Validating the "Implicit Deny" (Negative Testing)
 To prove that the endpoint is not globally exposed to all remote administration, an attempt was made to access a management tool that was *not* explicitly allowed in the Phase 4 firewall GPO.
-* Returned to **File > Add/Remove Snap-in** and attempted to add the **Services** snap-in, targeting the same remote endpoint (`DESKTOP-IC11PIP`).
-* **Result:** The console hung temporarily before throwing an error: *"Cannot open the Service Control Manager database on DESKTOP-IC11PIP. Error 1722: The RPC server is unavailable."*
-* **Security Context:** This successfully proves the network "Least Privilege" model. Even though the Domain Controller is highly trusted and successfully connected to Task Scheduler, the Windows 11 firewall explicitly dropped the connection attempt to the Service Control Manager because the `Remote Service Management` rules were intentionally omitted from the GPO.
+* Returned to **File > Add/Remove Snap-in** and attempted to add the **Windows Defender Firewall with Advanced Security** snap-in, targeting the same remote endpoint (`DESKTOP-IC11PIP`).
+* **Result:** The console failed to connect, throwing the following prompt: *"There was an error opening the Windows Defender Firewall with Advanced Security snap-in... The specified computer could not be remotely managed. Error code: 0x6D9."*
+* **Security Context:** This successfully proves the network "Least Privilege" model. Even with SMB (Port 445) enabled for domain trust verification, the Windows 11 endpoint explicitly dropped the dynamic RPC connection attempt. This confirms that unauthorized users (or compromised management tools) cannot remotely manipulate security policies because the specific `Windows Defender Firewall Remote Management` RPC rules were intentionally omitted from the baseline GPO.
 <img width="3840" height="2160" alt="Screenshot (49)" src="https://github.com/user-attachments/assets/903a22b8-08d8-467d-8ba2-8c57496aa3ef" />
 
 ### 4. Unintended Access Discovery (The SMB Fallback Vector)
@@ -49,6 +48,12 @@ To further test the baseline, an attempt was made to load the **Services** snap-
     * **Cause:** Attempting to execute the MMC connection using an account lacking local administrative privileges or missing the "Access this computer from the network" right.(In my case I was using a Local Administrator account initially)
     * **Resolution:** Ensured the session was authenticated using the Domain Admin account.
   <img width="3840" height="2160" alt="Screenshot (41)" src="https://github.com/user-attachments/assets/84695fc9-7a70-41ea-9357-dd79fa0ce06b" />
+
+## 🎯 Enterprise Design Considerations
+This phase practically demonstrates several critical architectural concepts required in a modern Security Operations Center:
+* **Automated Defense (SOAR):** The event-driven "Auto-Heal" scheduled task illustrates a shift from reactive monitoring to active, self-healing infrastructure. By automating the remediation of disabled security controls at the system level, the Mean Time To Respond (MTTR) is reduced to milliseconds, effectively neutralizing a common initial objective of advanced persistent threats (APTs) and ransomware.
+* **Network Least Privilege & Lateral Movement:** The successful negative testing validates the "Implicit Deny" architecture. By explicitly blocking dynamic RPC for unauthorized administrative services, the environment actively breaks the kill chain for attackers attempting lateral movement.
+* **Protocol Fallback Awareness:** The discovery of the Service Control Manager falling back to SMB/Named Pipes highlights a common enterprise blind spot. It proves that enabling broad protocols (like TCP 445 for File Sharing) can inadvertently punch holes in an otherwise strict RPC baseline. This underscores the necessity for deep packet inspection and strict protocol monitoring beyond simple port blocking.
 
 
 
