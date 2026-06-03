@@ -18,17 +18,25 @@ Validate the enterprise security baseline established in Phase 4 by remotely con
 * Within the remote Task Scheduler session, created a new scheduled task to execute a system configuration change.
 * Configured the task to run under the `NT AUTHORITY\SYSTEM` context to ensure maximum execution privileges without requiring an interactive user logon.
 
+
 ### 3. Validating the "Implicit Deny" (Negative Testing)
 To prove that the endpoint is not globally exposed to all remote administration, an attempt was made to access a management tool that was *not* explicitly allowed in the Phase 4 firewall GPO.
 * Returned to **File > Add/Remove Snap-in** and attempted to add the **Services** snap-in, targeting the same remote endpoint (`DESKTOP-IC11PIP`).
 * **Result:** The console hung temporarily before throwing an error: *"Cannot open the Service Control Manager database on DESKTOP-IC11PIP. Error 1722: The RPC server is unavailable."*
 * **Security Context:** This successfully proves the network "Least Privilege" model. Even though the Domain Controller is highly trusted and successfully connected to Task Scheduler, the Windows 11 firewall explicitly dropped the connection attempt to the Service Control Manager because the `Remote Service Management` rules were intentionally omitted from the GPO.
+<img width="3840" height="2160" alt="Screenshot (49)" src="https://github.com/user-attachments/assets/903a22b8-08d8-467d-8ba2-8c57496aa3ef" />
+
+### 4. Unintended Access Discovery (The SMB Fallback Vector)
+To further test the baseline, an attempt was made to load the **Services** snap-in, which was expected to fail since the specific "Remote Service Management" RPC rules were intentionally omitted.
+* **Result:** The Services snap-in successfully connected and populated the remote service list.
+* **Security Context (The Explanation):** This reveals a critical enterprise security mechanism. While the primary protocol for the Service Control Manager (SCM) is dynamic RPC, it has a built-in fallback. Because the **File and Printer Sharing (SMB-In)** rule (TCP Port 445) was explicitly enabled to allow the Object Picker to function during task creation, the SCM bypassed the blocked dynamic RPC ports and established the connection using **Named Pipes over SMB** (`\pipe\svcctl`). This demonstrates to a SOC analyst how enabling a broad protocol like SMB can inadvertently expose secondary administrative vectors, highlighting the importance of strict protocol monitoring and deep packet inspection.
+<img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/a0f6b9b1-af00-471e-b9c7-091008b71ff5" />
 
 ## ⚠️ Troubleshooting: Remote Execution Exceptions
 * **Error: "The RPC Server is unavailable" (Error 0x800706BA / 1722)**
     * **Expected (Negative Test):** As demonstrated above, this error is *expected* when accessing unapproved snap-ins (like Services) because the firewall drops the dynamic port request.
 * **Error: "Access is Denied" (Error 0x80070005)**
-    * **Cause:** Attempting to execute the MMC connection using an account lacking local administrative privileges or missing the "Access this computer from the network" right.(In my case I was using a Built-in Administrator[Local Account] account initially)
+    * **Cause:** Attempting to execute the MMC connection using an account lacking local administrative privileges or missing the "Access this computer from the network" right.(In my case I was using a Local Administrator account initially)
     * **Resolution:** Ensured the session was authenticated using the Domain Admin account.
 
 ## ✅ Validation & Telemetry
