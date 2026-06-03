@@ -29,7 +29,8 @@ Even with perfect network configurations, Windows evaluates the local security p
 Instead of configuring the firewall locally, strict access controls were enforced centrally to prevent accidental exposure.
 * In the GPMC, navigated to: **Computer Configuration > Policies > Windows Settings > Security Settings > Windows Defender Firewall with Advanced Security**.
 * Created and enabled the following Inbound Rules, explicitly restricting the **Remote IP** scope to the Domain Controller's IP (`192.168.18.129`).
-    
+<img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/bd41355a-41cd-4f4c-b3ec-8757ce2e4cfd" />
+
 * **Verification:** Ran `gpupdate /force` on the client, then opened `wf.msc` (Windows Defender Firewall) locally on the client to verify the scoped rules successfully propagated from the Domain Controller and were actively enforced on the `Domain` profile.
 
 ## 🏢 Enterprise Design Considerations
