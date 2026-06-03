@@ -10,6 +10,9 @@ Validate the enterprise security baseline established in Phase 4 by remotely con
 * Executed `mmc.exe` to open a blank console.
 * Navigated to **File > Add/Remove Snap-in**, selected **Task Scheduler**, and explicitly targeted the remote endpoint: `DESKTOP-IC11PIP`.
 * Successfully connected and loaded the remote task library, confirming the GPO firewall rules successfully opened the required dynamic RPC ports for this specific service.
+<img width="3840" height="2160" alt="Screenshot (42)" src="https://github.com/user-attachments/assets/3650af26-d198-4774-b48c-0fbd978051d3" />
+<img width="3840" height="2160" alt="Screenshot (45)" src="https://github.com/user-attachments/assets/6ec70063-bb71-4b23-acac-54c051106e38" />
+
 
 ### 2. Remote Task Execution
 * Within the remote Task Scheduler session, created a new scheduled task to execute a system configuration change.
