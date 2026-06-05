@@ -32,7 +32,7 @@ Policies must be explicitly linked to OUs to take effect.
 <img width="3840" height="2160" alt="Screenshot (34)" src="https://github.com/user-attachments/assets/bc32ff11-7482-4e78-a2dc-afa748879391" />
 
 
-## ⚠️ Troubleshooting: GPO Settings Not Reflecting on Client
+##  Troubleshooting: GPO Settings Not Reflecting on Client
 * **Cause 1 (Native Refresh Intervals):** Group Policy does not apply instantly. Windows endpoints natively refresh their policy from the Domain Controller every 90 minutes (with a randomized up to 30-minute offset).
     * **Resolution & Verification:** Executed `gpupdate /force` via an elevated command prompt on the Windows 11 client to force an immediate pull of the latest AD directory configurations. Once completed, ran `gpresult /r` to verify the application, confirming that `Remote Administration policy` successfully appeared under the "Applied Group Policy Objects" list for the computer context.
 
@@ -41,4 +41,4 @@ Policies must be explicitly linked to OUs to take effect.
 
 ##  Enterprise Design Considerations
 * **Accidental Deletion Protection:** The checkbox selected during the OU creation modifies the AD object's access control list (ACL) to explicitly deny the "Delete" permission to everyone, including Domain Admins. This is a critical enterprise safeguard against catastrophic script errors or accidental clicks that could orphan thousands of endpoints.
-* **Tiered Administration Models:** While this lab uses a flat `IT department` OU structure, modern enterprise security architectures (like Microsoft's Enterprise Access Model) dictate highly granular OU hierarchies. Endpoints, servers, and domain controllers are strictly separated into different OUs to ensure lateral movement paths are restricted.
+* **Tiered Administration Models:** While this lab uses a flat `IT department` OU structure, modern enterprise security architectures dictate highly granular OU hierarchies. Endpoints, servers, and domain controllers are strictly separated into different OUs to ensure lateral movement paths are restricted.
