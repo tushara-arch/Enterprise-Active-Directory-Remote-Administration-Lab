@@ -8,7 +8,7 @@ This project demonstrates the deployment and configuration of an Active Director
 * **Domain Name:** `soclab.local`
 * **Network:** Both machines attached to the same virtual network (NAT).
 
-## 🗺️ Network Topology
+##  Network Topology
 | Hostname | Role | IP Address | Operating System |
 | :--- | :--- | :--- | :--- |
 | `WIN-2QNL6415PHV` | Domain Controller / DNS | `192.168.18.129` (Static) | Windows Server 2025 |
