@@ -16,84 +16,59 @@ This project demonstrates the deployment and configuration of an Active Director
 
 ---
 
-##  Phase 1: Active Directory Domain Controller Setup
+##  Phase 1: Active Directory Domain Controller Provisioning
 
 **Actions Taken:**
-### Phase 1 Overview: Active Directory Domain Controller Provisioning
-* Deployed a Windows Server 2025 virtual machine to act as the central identity and access management hub for the enterprise lab.
-* Installed Active Directory Domain Services (AD DS) to enable centralized authentication, policy enforcement, and security telemetry generation.
-* Configured a static IP address on the primary network adapter to ensure reliable DNS resolution and prevent network isolation for future endpoints.
-* Successfully promoted the server to the authoritative Domain Controller for the newly established `soclab.local` forest root domain. 
-* Documented critical production environment design concepts, emphasizing the necessity of static addressing for core infrastructure and the principles of High Availability (HA) fault tolerance.
+* **Infrastructure Foundation:** Deployed a Windows Server 2025 virtual machine to act as the central identity and access management hub for the enterprise lab.
+* **Core Role Installation:** Installed Active Directory Domain Services (AD DS) to enable centralized authentication, policy enforcement, and security telemetry generation.
+* **Network Stabilization:** Configured a static IP address on the primary network adapter to ensure reliable DNS resolution and prevent network isolation for future endpoints.
+* **Domain Promotion:** Successfully promoted the server to the authoritative Domain Controller for the newly established `soclab.local` forest root domain. 
+* **Enterprise Architecture Alignment:** Documented critical production environment design concepts, emphasizing the necessity of static addressing for core infrastructure and the principles of High Availability (HA) fault tolerance.
    
 ---
 
 ##  Phase 2: Joining the Client Computer to the Domain
 
 **Actions Taken:**
-1. Configured the Windows 11 client's preferred DNS server to use the Domain Controller's IP address, enabling Active Directory name resolution.
-2. Successfully joined the client machine to the soclab.local domain using Domain Admin credentials.
-3. Restarted the system to complete the domain join process.
-4. Verified successful domain membership and communication with Active Directory services..
-
-> **⚠️ Common Errors & Troubleshooting**
-> * **Error:** *"An Active Directory Domain Controller (AD DC) for the domain could not be contacted."*
-> * **Cause:** The client machine could not resolve the domain name because its DNS settings were still pointing to the default external router/ISP.
-> * **Fix:** Changed the client's IPv4 DNS server directly to the Domain Controller's IP address (`192.168.1.10`).
+* **Trust Establishment:** Joined a Windows 11 enterprise endpoint to the `soclab.local` domain to enable centralized management, authentication, and Group Policy enforcement.
+* **DNS Configuration:** Manually configured the client's primary DNS to point directly to the Domain Controller, establishing the crucial name resolution required for Active Directory communication.
+* **Advanced AD Hardening:** Mitigated a critical default Active Directory vulnerability by using ADSI Edit to set the `ms-DS-MachineAccountQuota` (MAQ) to `0`, preventing standard unprivileged users from joining rogue devices to the network.
+* **Troubleshooting & Validation:** Navigated common domain join errors by validating network connectivity and verified the successful application of the domain suffix post-reboot.
+* **Enterprise Architecture Alignment:** Outlined production deployment realities, contrasting manual DNS configuration with DHCP Server Options and defining best practices for Active Directory object staging.
 
 ---
 
 ##  Phase 3: Organizational Unit (OU) & Group Policy (GPO) Configuration
 
 **Actions Taken:**
-1. Opened **Active Directory Users and Computers (ADUC)**.
-2. Created a new OU named `IT_Department` and moved the client computer object into this OU.
-3. Opened **Group Policy Management Console (GPMC)**.
-4. Created a new GPO named `Firewall_Remote_Admin_Policy` and linked it to the `IT_Department` OU.
-
-> **⚠️ Common Errors & Troubleshooting**
-> * **Error:** *GPO settings are not reflecting on the client machine.*
-> * **Cause:** Group Policy refreshes natively every 90 minutes; it does not apply instantly. Alternatively, the policy was applied to the wrong OU level.
-> * **Fix:** Verified the computer object was in the correct OU. Ran `gpupdate /force` on the client machine via an elevated command prompt to force the policy pull. Checked status using `gpresult /r`.
+* **Hierarchy Definition:** Created a dedicated `IT department` Organizational Unit (OU) within Active Directory to establish a logical, manageable structure for enterprise endpoints.
+* **Asset Staging:** Relocated the Windows 11 computer object from the unmanaged default `Computers` container into the targeted IT OU to bring it under management scope.
+* **Policy Initialization:** Engineered and linked a new Group Policy Object (GPO) named `Remote Administration policy` specifically to the IT OU to centralize and deploy security configurations.
+* **Application & Validation:** Bypassed standard 90-minute GPO background refresh cycles by executing `gpupdate /force` on the client, and validated successful policy application using `gpresult /r`.
+* **Enterprise Architecture Alignment:** Highlighted critical Active Directory safeguards, including accidental deletion protection (ACL modification) and the importance of Tiered Administration Models for restricting lateral movement.
 
 ---
 
-##  Phase 4: Firewall Configuration for Remote MMC
+##  Phase 4: Security Hardening & Remote Administration Configuration
 
 **Actions Taken:**
-To use MMC to control the client remotely, specific firewall rules must be enabled. I configured these centrally via the GPO created in Phase 3 (`Computer Configuration` -> `Policies` -> `Windows Settings` -> `Security Settings` -> `Windows Defender Firewall`).
-
-**Enabled Rules:**
-* COM+ Network Access (DCOM-In)
-* Remote Event Log Management (NP-In, RPC, RPC-EPMAP)
-* Remote Service Management (NP-In, RPC, RPC-EPMAP)
-* Windows Management Instrumentation (WMI-In)
-
-> **⚠️ Common Errors & Troubleshooting**
-> * **Error:** *MMC Error: "The RPC Server is unavailable" (Error 0x800706BA).*
-> * **Cause:** The Windows Defender Firewall on the client is blocking remote RPC dynamic ports, or the File and Printer Sharing rules are disabled.
-> * **Fix:** Ensured the GPO specifically allowed inbound traffic for **Remote Administration** and **File and Printer Sharing**. Once the GPO applied, the MMC connection succeeded.
+* **Network Trust Verification:** Verified Network Location Awareness (NLA) successfully authenticated with the Domain Controller, classifying the endpoint under the `Domain` profile to ensure accurate firewall rule processing.
+* **Service Prerequisites:** Audited and validated that mandatory underlying background services (RPC, RPC Endpoint Mapper, Task Scheduler, and Event Log) were actively running to support remote management protocols.
+* **Access Control & User Rights:** Configured User Rights Assignment via Group Policy to explicitly grant "Access this computer from the network" to Domain Admins, ensuring network logon authorization.
+* **Centralized Firewall Hardening:** Engineered and deployed highly restricted inbound Windows Defender Firewall rules via GPO, explicitly scoping all remote management traffic solely to the Domain Controller's IP address.
+* **Enterprise Architecture Alignment:** Contextualized the strict IP scoping as a simulation of Privileged Access Workstation (PAW) architecture, and highlighted how GPO-enforced immutable baselines actively prevent local GUI tampering.
 
 ---
 
-##  Phase 5: Remote Management via MMC & Task Scheduler
+## Phase 5: Remote Management Execution & Negative Testing (Validation)
 
 **Actions Taken:**
-1. Logged into the Domain Controller (or an admin workstation) as a Domain Admin.
-2. Opened `mmc.exe` and added the **Computer Management** snap-in.
-3. Directed the snap-in to connect to the remote client computer.
-4. Navigated to **Task Scheduler** within the remote MMC session.
-5. Created a new scheduled task remotely to change a system setting (running under the `SYSTEM` or `Domain Admin` context).
-
-> **⚠️ Common Errors & Troubleshooting**
-> * **Error:** *"Access is Denied" when trying to connect via MMC.*
-> * **Cause:** Attempting to connect using a standard user account rather than an account with local administrative privileges on the target machine.
-> * **Fix:** Ensured I was logged into the host machine with my Domain Admin account, which by default is added to the local Administrators group of all domain-joined computers. 
-> * **Error:** *Task Scheduler: "The network path was not found."*
-> * **Cause:** The Remote Registry service was not running on the client machine.
-> * **Fix:** Opened `services.msc` within the remote MMC, located the **Remote Registry** service, and started it.
+* **Baseline Validation:** Successfully established a targeted remote MMC connection from the Domain Controller to the Windows 11 endpoint, confirming the precise execution of the dynamic RPC firewall rules configured in Phase 4.
+* **Automated Remediation (SOAR):** Engineered an event-driven, self-healing scheduled task (`SOC-Firewall-Enforcer`) that detects unauthorized firewall profile changes (Event ID 2082) and automatically re-enables the firewall in milliseconds, simulating advanced active defense.
+* **Negative Testing:** Proved the efficacy of the "Implicit Deny" network architecture by attempting to connect unauthorized snap-ins (e.g., Windows Defender Firewall management), verifying that the endpoint actively dropped the unapproved dynamic RPC requests.
+* **Protocol Fallback Analysis:** Discovered and documented a critical SMB fallback vector, demonstrating how the Service Control Manager bypasses blocked dynamic RPC ports via Named Pipes (`\pipe\svcctl`) when broad File Sharing rules are enabled.
+* **Enterprise Architecture Alignment:** Contextualized the lab findings within modern Security Operations Center (SOC) practices, highlighting the importance of SOAR, Remote UAC authentication restrictions, and deep packet inspection to uncover architectural blind spots.
 
 ---
 
-##  Security Operations Context
-Understanding these Active Directory mechanics and Windows internals is crucial for Security Operations Center (SOC) monitoring and enterprise vulnerability management. Properly configuring and securing RPC, WMI, and remote management interfaces demonstrates how to balance the reduction of the network attack surface while maintaining legitimate administrative access.
+> **Security Operations Context:** This project bridges the gap between systems administration and security engineering. Understanding deep Active Directory mechanics, Windows RPC/SMB protocol behaviors, and immutable GPO baselines is critical for modern Security Operations Center (SOC) monitoring and enterprise vulnerability management. By moving beyond basic configuration to implement SOAR-driven active defenses (auto-healing firewalls) and validating "Implicit Deny" architectures through negative testing, this lab demonstrates how to aggressively reduce the internal attack surface, eliminate architectural blind spots, and secure legitimate administrative access against lateral movement.
