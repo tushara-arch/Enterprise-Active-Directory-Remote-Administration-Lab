@@ -25,13 +25,13 @@ With name resolution established, the system was configured to transition from a
 <img width="3840" height="2160" alt="Screenshot (37)" src="https://github.com/user-attachments/assets/97ac0691-6579-4947-b34c-12f1da25f4ea" />
 
 
-## ⚠️ Troubleshooting: Domain Controller Could Not Be Contacted
+##  Troubleshooting: Domain Controller Could Not Be Contacted
 * **Cause 1 (DNS Misconfiguration):** The client is still using a default NAT/ISP router for DNS instead of the internal Domain Controller.
     * **Resolution:** Verified via `ipconfig` that the primary DNS was strictly set to `192.168.18.129` before attempting the join.
 * **Cause 2 (Infrastructure Offline):** The Domain Controller is powered down.
     * **Resolution:** Verified the Windows Server 2025 VM was actively running and successfully responded to a basic ICMP `ping` from the client machine.
 
 
-## 🏢 Enterprise Design Considerations
+##  Enterprise Design Considerations
 * **DHCP vs. Manual DNS:** In a production enterprise environment, endpoints typically receive their DNS settings automatically via DHCP Server Options rather than manual interface configuration. This lab uses manual assignment to explicitly demonstrate the strict dependency Active Directory has on precise DNS resolution.
 * **Object Staging:** By default, newly joined computers land in the default `Computers` container, which cannot have Group Policy objects directly linked to it. Enterprise best practice dictates immediately moving this object to a structured Organizational Unit (OU)—which will be addressed in Phase 3—to ensure security baselines are enforced.
