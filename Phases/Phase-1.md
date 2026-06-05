@@ -11,7 +11,7 @@ This infrastructure is critical for simulating a realistic enterprise environmen
 * Accessed **Server Manager** on the newly deployed Windows Server 2025 instance.
 * Successfully installed the core infrastructure roles:
     * **Active Directory Domain Services (AD DS)**
-    * **DNS Server**
+    
  <img width="3840" height="2160" alt="Screenshot (17)" src="https://github.com/user-attachments/assets/4dcb1781-474b-4c1c-91cb-910a0ffea4ec" />
 
 ### 2. Network Configuration & Prerequisite Resolution
@@ -33,6 +33,3 @@ With the static IP configured, the AD DS Configuration Wizard prerequisite check
 ## 🏢 Enterprise Design Considerations
 * **Static Addressing for Core Infrastructure:** Assigning a static IP address to the Domain Controller is a strict requirement, not an option. Because this server acts as the primary DNS authority for the `soclab.local` domain, dynamic IP changes would cause widespread name resolution failures, isolate endpoints, and immediately disrupt the routing of security telemetry across the network.
 * **High Availability & Redundancy:** While this lab provisions a single Domain Controller because of limitations of compute resources, production enterprise environments deploy multiple Domain Controllers across different physical or geographical sites. This ensures fault tolerance—if one DC experiences a hardware failure or network outage, secondary DCs seamlessly take over to ensure authentication and directory services remain uninterrupted.
-  
-## Next Steps
-With the domain established, the next phase will involve provisioning endpoint machines (e.g., Windows 10/11), joining them to the `soclab.local` domain, and setting up the foundational Group Policy Objects (GPOs) to manage the environment.
