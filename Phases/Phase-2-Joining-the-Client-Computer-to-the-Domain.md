@@ -24,13 +24,21 @@ With name resolution established, the system was configured to transition from a
 * Upon reboot, verified the Full Device Name successfully updated to include the domain suffix (`DESKTOP-IC11PIP.soclab.local`).
 <img width="3840" height="2160" alt="Screenshot (37)" src="https://github.com/user-attachments/assets/97ac0691-6579-4947-b34c-12f1da25f4ea" />
 
+## Advanced AD Hardening: Restricting MachineAccountQuota (MAQ)
+By default, Active Directory permits any standard authenticated user to join up to 10 devices to the domain. To establish a strict zero-trust baseline and prevent unauthorized rogue endpoints, this default behavior was explicitly neutralized prior to joining the Windows 11 client.
+
+* **Action Taken:** * Launched **ADSI Edit** on the Domain Controller and connected to the Default Naming Context.
+    * Navigated to the root domain object (`DC=soclab,DC=local`), opened the properties, and located the `ms-DS-MachineAccountQuota` attribute.
+    * Modified the default value from `10` to `0`.
+* **Security Context:** Executing this change is a critical enterprise defense mechanism. It prevents threat actors who have compromised a standard, unprivileged user account from injecting rogue devices into the network.
+<img width="3845" height="2165" alt="MachineQuota" src="https://github.com/user-attachments/assets/365b3d67-6c74-4acc-bc88-18c2079397c9" />
+
 
 ##  Troubleshooting: Domain Controller Could Not Be Contacted
 * **Cause 1 (DNS Misconfiguration):** The client is still using a default NAT/ISP router for DNS instead of the internal Domain Controller.
     * **Resolution:** Verified via `ipconfig` that the primary DNS was strictly set to `192.168.18.129` before attempting the join.
 * **Cause 2 (Infrastructure Offline):** The Domain Controller is powered down.
     * **Resolution:** Verified the Windows Server 2025 VM was actively running and successfully responded to a basic ICMP `ping` from the client machine.
-
 
 ##  Enterprise Design Considerations
 * **DHCP vs. Manual DNS:** In a production enterprise environment, endpoints typically receive their DNS settings automatically via DHCP Server Options rather than manual interface configuration. This lab uses manual assignment to explicitly demonstrate the strict dependency Active Directory has on precise DNS resolution.
