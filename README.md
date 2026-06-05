@@ -19,8 +19,12 @@ This project demonstrates the deployment and configuration of an Active Director
 ##  Phase 1: Active Directory Domain Controller Setup
 
 **Actions Taken:**
-1. Installed the **Active Directory Domain Services (AD DS)** and **DNS Server** roles via Server Manager.
-2. Promoted the server to a Domain Controller and configured the new forest root domain.
+### Phase 1 Overview: Active Directory Domain Controller Provisioning
+* Deployed a Windows Server 2025 virtual machine to act as the central identity and access management hub for the enterprise lab.
+* Installed Active Directory Domain Services (AD DS) to enable centralized authentication, policy enforcement, and security telemetry generation.
+* Configured a static IP address on the primary network adapter to ensure reliable DNS resolution and prevent network isolation for future endpoints.
+* Successfully promoted the server to the authoritative Domain Controller for the newly established `soclab.local` forest root domain. 
+* Documented critical production environment design concepts, emphasizing the necessity of static addressing for core infrastructure and the principles of High Availability (HA) fault tolerance.
    
 ---
 
