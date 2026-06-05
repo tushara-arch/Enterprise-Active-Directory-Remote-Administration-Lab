@@ -41,19 +41,16 @@ To further test the baseline, an attempt was made to load the **Services** snap-
     * **The Reason:** SCM requires two steps: querying the Endpoint Mapper (Port 135) and connecting to the dynamic service port. Because the Remote Scheduled Tasks Management (RPC-EPMAP) rule and the COM+ rule configured in Phase 4 already explicitly open TCP Port 135, the Endpoint Mapper is already actively routing traffic for the management IP. Therefore, the specific RPC-EPMAP rule for Remote Service Management is entirely redundant. Enabling just its (RPC) rule allows the dynamic high port to open, permitting standard TCP RPC to function flawlessly without exposing SMB (Port 445).
 
 
-## ⚠️ Troubleshooting: Remote Execution Exceptions
+##  Troubleshooting: Remote Execution Exceptions
 * **Error: "The RPC Server is unavailable" (Error 0x800706BA / 1722)**
     * **Expected (Negative Test):** As demonstrated above, this error is *expected* when accessing unapproved snap-ins (like Services) because the firewall drops the dynamic port request.
 * **Error: "Access is Denied"**
-    * **Cause:** Attempting to execute the MMC connection using an account lacking local administrative privileges or missing the "Access this computer from the network" right.(In my case I was using a Local Administrator account initially)
+    * **Cause:** Attempting to execute the remote connection without the proper domain authentication context. Even if an account has local admin rights, Windows Remote User Account Control (UAC) intentionally strips administrative tokens from local accounts connecting over the network to prevent lateral movement. (In this lab scenario, this error was observed when the initial connection was attempted using a Local Administrator account instead of a Domain account).
     * **Resolution:** Ensured the session was authenticated using the Domain Admin account.
   <img width="3840" height="2160" alt="Screenshot (41)" src="https://github.com/user-attachments/assets/84695fc9-7a70-41ea-9357-dd79fa0ce06b" />
 
-## 🎯 Enterprise Design Considerations
+##  Enterprise Design Considerations
 This phase practically demonstrates several critical architectural concepts required in a modern Security Operations Center:
 * **Automated Defense (SOAR):** The event-driven "Auto-Heal" scheduled task illustrates a shift from reactive monitoring to active, self-healing infrastructure. By automating the remediation of disabled security controls at the system level, the Mean Time To Respond (MTTR) is reduced to milliseconds, effectively neutralizing a common initial objective of advanced persistent threats (APTs) and ransomware.
-* **Network Least Privilege & Lateral Movement:** The successful negative testing validates the "Implicit Deny" architecture. By explicitly blocking dynamic RPC for unauthorized administrative services, the environment actively breaks the kill chain for attackers attempting lateral movement.
+* **Network Least Privilege** The successful negative testing validates the "Implicit Deny" architecture by explicitly blocking dynamic RPC for unauthorized administrative services.
 * **Protocol Fallback Awareness:** The discovery of the Service Control Manager falling back to SMB/Named Pipes highlights a common enterprise blind spot. It proves that enabling broad protocols (like TCP 445 for File Sharing) can inadvertently punch holes in an otherwise strict RPC baseline. This underscores the necessity for deep packet inspection and strict protocol monitoring beyond simple port blocking.
-
-
-
