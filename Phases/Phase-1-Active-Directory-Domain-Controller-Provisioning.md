@@ -30,6 +30,6 @@ With the static IP configured, the AD DS Configuration Wizard prerequisite check
 * Initiated the installation. Following the automatic reboot, the server successfully came online as the authoritative Domain Controller for `soclab.local`.
 <img width="3838" height="1961" alt="image" src="https://github.com/user-attachments/assets/f8e18a5e-666a-4338-aa91-7c15dc83f72a" />
 
-## 🏢 Enterprise Design Considerations
+##  Enterprise Design Considerations
 * **Static Addressing for Core Infrastructure:** Assigning a static IP address to the Domain Controller is a strict requirement, not an option. Because this server acts as the primary DNS authority for the `soclab.local` domain, dynamic IP changes would cause widespread name resolution failures, isolate endpoints, and immediately disrupt the routing of security telemetry across the network.
 * **High Availability & Redundancy:** While this lab provisions a single Domain Controller because of limitations of compute resources, production enterprise environments deploy multiple Domain Controllers across different physical or geographical sites. This ensures fault tolerance—if one DC experiences a hardware failure or network outage, secondary DCs seamlessly take over to ensure authentication and directory services remain uninterrupted.
