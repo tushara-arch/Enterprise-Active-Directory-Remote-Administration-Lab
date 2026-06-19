@@ -31,7 +31,7 @@ By default, Active Directory permits any standard authenticated user to join up 
     * Navigated to the root domain object (`DC=soclab,DC=local`), opened the properties, and located the `ms-DS-MachineAccountQuota` attribute.
     * Modified the default value from `10` to `0`.
 * **Security Context:** Executing this change is a critical enterprise defense mechanism. It prevents threat actors who have compromised a standard, unprivileged user account from injecting rogue devices into the network.
-<img width="3845" height="2165" alt="MachineQuota" src="https://github.com/user-attachments/assets/365b3d67-6c74-4acc-bc88-18c2079397c9" />
+<img width="100%" height="100%" alt="MachineQuota" src="https://github.com/user-attachments/assets/365b3d67-6c74-4acc-bc88-18c2079397c9" />
 
 
 ##  Troubleshooting: Domain Controller Could Not Be Contacted
