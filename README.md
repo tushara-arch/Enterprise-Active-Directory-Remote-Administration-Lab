@@ -24,6 +24,8 @@ This project demonstrates the deployment and configuration of an Active Director
 * **Network Stabilization:** Configured a static IP address on the primary network adapter to ensure reliable DNS resolution and prevent network isolation for future endpoints.
 * **Domain Promotion:** Successfully promoted the server to the authoritative Domain Controller for the newly established `soclab.local` forest root domain. 
 * **Enterprise Architecture Alignment:** Documented critical production environment design concepts, emphasizing the necessity of static addressing for core infrastructure and the principles of High Availability (HA) fault tolerance.
+
+[View Details](Phases/Phase-1-Active-Directory-Domain-Controller-Provisioning.md)
    
 ---
 
@@ -36,6 +38,8 @@ This project demonstrates the deployment and configuration of an Active Director
 * **Troubleshooting & Validation:** Navigated common domain join errors by validating network connectivity and verified the successful application of the domain suffix post-reboot.
 * **Enterprise Architecture Alignment:** Outlined production deployment realities, contrasting manual DNS configuration with DHCP Server Options and defining best practices for Active Directory object staging.
 
+[View Details](Phases/Phase-2-Joining-the-Client-Computer-to-the-Domain.md)
+
 ---
 
 ##  Phase 3: Organizational Unit (OU) & Group Policy (GPO) Configuration
@@ -46,6 +50,8 @@ This project demonstrates the deployment and configuration of an Active Director
 * **Policy Initialization:** Engineered and linked a new Group Policy Object (GPO) named `Remote Administration policy` specifically to the IT OU to centralize and deploy security configurations.
 * **Application & Validation:** Bypassed standard 90-minute GPO background refresh cycles by executing `gpupdate /force` on the client, and validated successful policy application using `gpresult /r`.
 * **Enterprise Architecture Alignment:** Highlighted critical Active Directory safeguards, including accidental deletion protection (ACL modification) and the importance of Tiered Administration Models for restricting lateral movement.
+
+[View Details](Phases/Phase-3-Organizational-Unit-(OU)-&-Group-Policy-(GPO)-Configuration.md)
 
 ---
 
@@ -58,6 +64,8 @@ This project demonstrates the deployment and configuration of an Active Director
 * **Centralized Firewall Hardening:** Engineered and deployed highly restricted inbound Windows Defender Firewall rules via GPO, explicitly scoping all remote management traffic solely to the Domain Controller's IP address.
 * **Enterprise Architecture Alignment:** Contextualized the strict IP scoping as a simulation of Privileged Access Workstation (PAW) architecture, and highlighted how GPO-enforced immutable baselines actively prevent local GUI tampering.
 
+[View Details](Phases/Phase-4-Security-Hardening-&-Remote-Administration-Configuration.md)
+
 ---
 
 ## Phase 5: Remote Management Execution & Negative Testing (Validation)
@@ -68,6 +76,8 @@ This project demonstrates the deployment and configuration of an Active Director
 * **Negative Testing:** Proved the efficacy of the "Implicit Deny" network architecture by attempting to connect unauthorized snap-ins (e.g., Windows Defender Firewall management), verifying that the endpoint actively dropped the unapproved dynamic RPC requests.
 * **Protocol Fallback Analysis:** Discovered and documented a critical SMB fallback vector, demonstrating how the Service Control Manager bypasses blocked dynamic RPC ports via Named Pipes (`\pipe\svcctl`) when broad File Sharing rules are enabled.
 * **Enterprise Architecture Alignment:** Contextualized the lab findings within modern Security Operations Center (SOC) practices, highlighting the importance of SOAR, Remote UAC authentication restrictions, and deep packet inspection to uncover architectural blind spots.
+
+[View Details](Phases/Phase-5-Remote-Management-Execution-&-Negative-Testing-(Validation).md)
 
 ---
 
